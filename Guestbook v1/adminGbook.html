@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">    
+    <title>Users</title>
+    <style>
+body{
+    margin:20px;
+    display: grid;
+    align-items: center;
+    justify-content:center ;
+    height: 90%;
+    background-color:#c9e5e6;
+    font-family: helvetica, 'Courier New', Courier, monospace;
+}
+.container {
+    width: 90%;
+}
+table {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+table td, table th {
+  border: 1px solid rgb(201, 229, 206);
+  padding: 8px;
+}
+table tr:nth-child(even){background-color: #f0f0e7;}
+table tr:hover {background-color: rgb(173, 224, 154);}
+table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: #6fb7c5;
+  color: white;
+}
+button {
+  display: inline-block;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-align: center;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border-radius: 15px;
+}
+button:hover {
+      background-color:#2d065d;
+      transition: 0.7s;
+  }
+.buttonb {
+    background-color: #005dba;   
+}
+.buttondel {
+    background-color: #f44336;   
+}
+.dataForm {
+    background-color: #ffffff;
+    border-radius: 5px;
+    padding: 10px;
+    margin-right: 5px;
+    width: 100%;
+}
+input {
+    width: 100%;
+    font-size: 16px;
+}
+    </style>
+</head>
+
+<body>
+  <div class="container">   
+        <div class="dataForm">
+            <table>
+                <tr><th>ID</th><th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>IP</th><th>EDIT</th><th>DELETE</th></tr>
+                <tbody  id="listado"></tbody>
+                <tr>
+                    <td>>></td>
+                    <td><input style="visibility:hidden" name="addid" id="addid" value=""></td>
+                    <td><input type="text" placeholder="Name" id="addname"></td>
+                    <td><input type="email" placeholder="Email" id="addemail"></td>
+                    <td><input type="text" placeholder="Message" id="addmessage"></td>
+                    <td><input style="visibility:visible" type="datetime-local" id="adddate"></td>
+                    <td><input style="visibility:visible" type="text" id="addip"></td>
+                    <td>     
+                        <button id="btnCrear" class="buttonb" style="display:block" onclick="addUser()">Add</button>
+                        <button id="btnEditar" style="display:none" onclick="editUser()">Save</button>               
+                    </td>
+                    <td>
+                        <button id="btnClear" class="buttonb" onclick="clearForm()">Clear</button>                                     
+                    </td>
+                </tr>               
+            </table>        
+      </div>    
+</div> 
+  <script>
+ function clearForm(){
+    document.getElementById('addname').value='';
+    document.getElementById('addemail').value='';    
+    document.getElementById('addmessage').value='';
+    document.getElementById('addid').style.visibility = 'hidden';
+    document.getElementById('adddate').style.visibility = 'visible';
+    document.getElementById('addip').style.visibility = 'visible';                
+    document.getElementById('btnCrear').style.display = 'block';
+    document.getElementById('btnEditar').style.display = 'none';
+
+}    
+async function addUser(){
+    const name = document.getElementById('addname').value; if(name.trim()===""){ alert('must enter name'); return false;}
+    const email= document.getElementById('addemail').value; if(email.trim()===""){ alert('must enter email'); return false;}  
+    const message = document.getElementById('addmessage').value; if(message.trim()===""){ alert('must enter message'); return false;}
+    const objUser = {name, email, message}
+
+    const response = await fetch('./gbook', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(objUser)
+    });
+
+    if(response.status === 200){
+        clearForm();
+        listUsers();
+    }
+};
+async function editUser(){
+    const name= document.getElementById('addname').value; 
+    const email= document.getElementById('addemail').value; 
+    const id = document.getElementById('addid').value;
+    const message = document.getElementById('addmessage').value; 
+    const objUser1 = {id,name, email, message}
+    //console.log(objUser1);
+
+    const response = await fetch('./gbook', {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(objUser1)
+    });
+
+    if(response.status === 200){
+        clearForm();
+        listUsers();
+    }
+};
+async function deleteUser(iduser){
+    const response = await fetch('./gbook', {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id:iduser}) 
+    });
+
+    if(response.status === 200){
+      listUsers();
+    }
+}  
+async function listUsers() {
+    const response = await fetch('./gbook');
+    const objeto = await response.json();
+    const listado = document.getElementById('listado');
+    var ind = 0;
+    let html = '';
+    objeto.forEach(element => {
+        html += `<tr>
+         <td>${element.id} </td><td>${element.name}</td><td>${element.email}</td><td>${element.message}</td><td>${new Date(element.date).toISOString().slice(0, 19).replace(/T/g,'|')}</td><td><a href="https://ip-api.com/#${element.gip}">${element.gip}</a></td><td><button onclick="getUser('${element.id}')">EDIT</button></td><td><button class="buttondel" onclick="deleteUser('${element.id}')">DELETE</button></td>        
+         </tr>`;
+        });
+    listado.innerHTML = html;
+};
+async function getUser(uid){
+    const response = await fetch('./gbook/'+uid);   
+    if(response.status === 200){
+        const {id,name,email,message,ip,date} = await response.json();
+        document.getElementById('btnCrear').style.display = 'none';
+        document.getElementById('btnEditar').style.display = 'block';
+        document.getElementById('addid').value=id;
+        document.getElementById('addip').value=ip;
+        document.getElementById('addname').value=name;
+        document.getElementById('addemail').value=email;
+        document.getElementById('addmessage').value=message;
+        document.getElementById('addid').style.visibility = 'visible';
+        document.getElementById('addip').style.visibility = 'visible';
+
+    }
+}
+listUsers()      
+</script>
+</body>
+</html>
