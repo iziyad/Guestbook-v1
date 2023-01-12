@@ -18,7 +18,7 @@ module.exports ={
         if (hashpassword === object.password) {
             console.log(hashpassword);                        
             res.writeHead(200, { "Content-Type": "application/json" });
-            res.write(JSON.stringify({username:req.body.username,token:"libHREcXqreju91Qm8rzNadJHpR41CGzjlOaYh9pXt0="}));
+            res.write(JSON.stringify({username:req.body.username,token:"libHREcXqreju91Qm8rzNadJHpR41CGzjlOaYh9pXt0=",islogin:true}));
             res.end();
         }
         else {

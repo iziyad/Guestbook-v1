@@ -182,9 +182,36 @@ img.icon {
   background: #A51C3C;
   transition: all 0.25s ease;
 }
+button {
+  padding: 1rem 4rem;
+  display: inline-block;
+  border: none;
+  margin-right: 0.5rem;
+  color: #CDDBE2;
+  background: #A51C3C;
+  transition: all 0.25s ease;
+}
 .form-button:hover {
   background: #ED1B51;
   color: #fff;
+}
+button:hover {
+  background: #ED1B51;
+  color: #fff;
+}
+.about {
+    position: absolute;
+    top: 0;
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 0 0 15px 15px;
+    font-size: 1em;
+    font-family: 'Heebo', sans-serif;
+    right: 31px;
+}
+
+.linkAbout:hover {
+    color: #406ff3;
 }
 </style>
 </head>
@@ -210,12 +237,18 @@ img.icon {
         <h1>This is my Website</h1>
         <p> Thanks for checking this out. This is my guestbook. Feel free to sign it so I can see you were here.</p>
         <div class="links"><div id="lg1">
-            <a href="#" onclick="login()">Login / Logout</a></div>
+            <a href="#" onclick="login()">Login</a></div>
             <div id="login"></div>
             <div id="lg2"><a  href="./admingbook">Manage Guestbook</a></div>
             <div id="lg3"><a  href="./adminusers">Users</a></div></div>
+            <div id="lg4"><button onclick="Logout()">Logout</button></div>
         </div>
     </div>
+</div>
+<div class="about">
+  <a href="./" class="linkAbout">Home</a>
+  <a href="./" class="linkAbout" id="un1"></a>
+  <a href="./" class="linkAbout">Me</a>
 </div>
 <script>
  function clearForm(){
@@ -252,10 +285,16 @@ listbook.innerHTML = html;
 };
 function login(){
   const logi = '<div><label for="add_name" >User name</label><input name="username"id="addusername" value="" /></div>'
-    + '<div><label for="add_password">Password</label><input type="password" name="password" id="addpassword" value=""/></div><button style="margin-right: 90px;margin-top: 5px;" onclick="Loginfun()">Login</button></div>'
+    + '<div><label for="add_password">Password</label><input type="password" name="password" id="addpassword" value=""/></div><button onclick="Loginfun()">Login</button></div>'
     document.getElementById('login').innerHTML = logi;
     document.getElementById('lg1').style.visibility = 'hidden';
  
+
+}
+async function Logout(){
+  localStorage.setItem('islogin','false');
+  location.reload()
+
 
 }
 async function Loginfun(){
@@ -272,16 +311,19 @@ async function Loginfun(){
 
     if(response.status === 200){
       let jsondata =  await response.json();
+      document.getElementById('lg4').style.visibility = 'visible';
       if (jsondata.username === "bigboss") {
         document.getElementById('lg2').style.visibility = 'visible';
         document.getElementById('lg3').style.visibility = 'visible';
 
       }
+      
       localStorage.setItem('username',jsondata.username);
       localStorage.setItem('accesstoken',jsondata.token);
+      localStorage.setItem('islogin',jsondata.islogin);
+      document.getElementById('un1').innerHTML =localStorage.getItem('username');
+      document.getElementById('login').innerHTML = "welcome " + localStorage.getItem('username');
 
-
-      document.getElementById('login').innerHTML = "welcome " + localStorage.getItem('username')+ localStorage.getItem('accesstoken');
       
 
 
@@ -290,10 +332,43 @@ async function Loginfun(){
 function chesse(){
   document.getElementById('lg2').style.visibility = 'hidden';
   document.getElementById('lg3').style.visibility = 'hidden';
+  document.getElementById('lg4').style.visibility = 'hidden';
+}
+function islogincheck(){
+let check = localStorage.getItem('islogin');
+let username = localStorage.getItem('username');
+if (check === 'true') {
+  if (username === 'bigboss') {
+  document.getElementById('lg1').style.visibility = 'hidden';
+  document.getElementById('lg2').style.visibility = 'visible';
+  document.getElementById('lg3').style.visibility = 'visible';
+  document.getElementById('lg4').style.visibility = 'visible';
+  document.getElementById('login').innerHTML = "welcome " + localStorage.getItem('username')
+  document.getElementById('un1').innerHTML =localStorage.getItem('username');
+
+  } else {
+  document.getElementById('lg1').style.visibility = 'hidden';
+  document.getElementById('lg2').style.visibility = 'hidden';
+  document.getElementById('lg3').style.visibility = 'hidden';
+  document.getElementById('lg4').style.visibility = 'visible';
+  document.getElementById('login').innerHTML = "welcome " + localStorage.getItem('username');
+  document.getElementById('un1').innerHTML =localStorage.getItem('username');
+
+  }
+  
 
 }
+else 
+{document.getElementById('lg1').style.visibility = 'visible';
+  document.getElementById('lg2').style.visibility = 'hidden';
+  document.getElementById('lg3').style.visibility = 'hidden';
+  document.getElementById('lg4').style.visibility = 'hidden';}
+}
+
+
 listGbook()
 chesse()
+islogincheck()
 </script>
 </body>
 </html>
