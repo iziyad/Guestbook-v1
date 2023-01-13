@@ -16,9 +16,14 @@ module.exports ={
                           };
         let hashpassword = sha256(req.body.password)
         if (hashpassword === object.password) {
-            console.log(hashpassword);                        
+        let m={"username":"ziyad","exp":1673633592,"sub": "226857231520-zHDVjexWQc7MgQqZUQYDDdZCzTxkTg","loggedIn": true};
+        let n= Buffer.from(JSON.stringify(m));
+        let xtoken = n.toString("base64");
+
+
+
             res.writeHead(200, { "Content-Type": "application/json" });
-            res.write(JSON.stringify({username:req.body.username,token:"libHREcXqreju91Qm8rzNadJHpR41CGzjlOaYh9pXt0=",islogin:true}));
+            res.write(JSON.stringify({username:req.body.username,token:xtoken,islogin:true}));
             res.end();
         }
         else {
