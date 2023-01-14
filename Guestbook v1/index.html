@@ -239,6 +239,10 @@ button:hover {
         <div class="links"><div id="lg1">
             <a href="#" onclick="login()">Login</a></div>
             <div id="login"></div>
+            <div id="rg1"><a href="#" onclick="Regifun()">Register</a></div>
+            <div id="Regifun"></div>
+
+            
             <div id="lg2"><a  href="./admingbook">Manage Guestbook</a></div>
             <div id="lg3"><a  href="./adminusers">Users</a></div></div>
             <div id="lg4"><button onclick="Logout()">Logout</button></div>
@@ -284,10 +288,11 @@ objeto.forEach(element => {
 listbook.innerHTML = html;
 };
 function login(){
-  const logi = '<div><label for="add_name" >User name</label><input name="username"id="addusername" value="" /></div>'
-    + '<div><label for="add_password">Password</label><input type="password" name="password" id="addpassword" value=""/></div><button onclick="Loginfun()">Login</button></div>'
+  const logi = '<div id="logi"><div><label for="add_name" >User name</label><input name="username"id="addusername" value="" /></div><div><label for="add_password">Password</label><input type="password" name="password" id="addpassword" value=""/></div><button onclick="Loginfun()">Login</button></div></div>'
     document.getElementById('login').innerHTML = logi;
     document.getElementById('lg1').style.visibility = 'hidden';
+    document.getElementById('rg1').style.visibility = 'hidden';
+
  
 
 }
@@ -297,6 +302,33 @@ async function Logout(){
 
 
 }
+function Regifun(){
+  document.getElementById('rg1').style.visibility = 'hidden';
+  document.getElementById('lg1').style.visibility = 'hidden';
+
+
+  const Regi = '<div id="Register"><div><label for="add_name" >User name</label><input name="username"id="addusername" value="" /></div><div><label for="add_email">Email</label><input name="email" id="addemail" value="" /></div><div><label for="add_password">Password</label><input type="password" name="password" id="addpassword" value=""/></div><div><button onclick="Registerfun()">Register</button></div></div>'
+    document.getElementById('Regifun').innerHTML = Regi;
+
+}
+async function Registerfun(){
+  const username = document.getElementById('addusername').value; if(username.trim()===""){ alert('must enter name'); return false;}
+    const email= document.getElementById('addemail').value;   
+    const password = document.getElementById('addpassword').value; if(password.trim()===""){ alert('must enter password'); return false;}
+    const objUser = {username, email, password}
+
+    const response = await fetch('./users', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(objUser)
+    });
+
+    if(response.status === 200){
+      location.reload()
+
+    }
+}
+
 async function Loginfun(){
   const username = document.getElementById('addusername').value; if(username.trim()===""){ alert('must enter name'); return false;}
     const password = document.getElementById('addpassword').value; if(password.trim()===""){ alert('must enter password'); return false;}

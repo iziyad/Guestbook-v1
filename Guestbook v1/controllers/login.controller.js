@@ -3,6 +3,17 @@ var crypto = require('crypto')
 function sha256(s) {
     return crypto.createHash('sha256').update(s).digest('base64');
 };
+function hmac(data ,scertkey) {
+    const header = JSON.stringify({"alg": "HS256","typ": "JWT"});
+    const encodedHeaders = Buffer.from(header).toString('base64');
+    const Playload = JSON.stringify(data);
+    const encodedPlayload = Buffer.from(Playload).toString('base64');
+    const signture = crypto.createHmac('sha256', scertkey).update(`${encodedHeaders}.${encodedPlayload}`).digest('base64')
+    const token = `${encodedHeaders}.${encodedPlayload}.${signture}`
+    return token;
+}
+
+
 module.exports ={
     loginuser(req, res){
         console.log(req.body);
@@ -16,9 +27,11 @@ module.exports ={
                           };
         let hashpassword = sha256(req.body.password)
         if (hashpassword === object.password) {
-        let m={"username":"ziyad","exp":1673633592,"sub": "226857231520-zHDVjexWQc7MgQqZUQYDDdZCzTxkTg","loggedIn": true};
-        let n= Buffer.from(JSON.stringify(m));
-        let xtoken = n.toString("base64");
+        let m={"username":object.username,"exp":1673633592,"sub": object.id,"loggedIn": true};
+        let secpass = "kafsZxcKokz";
+        let xtoken = hmac(m,secpass);
+        console.log(xtoken);
+
 
 
 
