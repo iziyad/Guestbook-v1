@@ -1,7 +1,16 @@
 var fs = require('fs');
 var crypto = require('crypto');
+var jwt = require('../ajwt');
+
 module.exports ={
     createItem(req, res){
+        let secpass = "kafsZxcKokz";
+        console.log(req.headers.accesstoken);
+
+
+        let a =jwt.verify(req.headers.accesstoken,secpass);
+        let token = jwt.sign(a,secpass);
+        if (a.verify === true) {
         req.body.id=crypto.randomBytes(16).toString("hex");
         req.body.date = Date.now();
         req.body.gip = req.socket.remoteAddress;
@@ -14,6 +23,12 @@ module.exports ={
         res.writeHead(200, { "Content-Type": "text/html" });
         res.write("Data created");
         res.end();
+        } else {
+            res.writeHead(200, { "Content-Type": "text/html" });
+                res.write("Access Denied");
+                res.end();
+        }
+        
   
     },
     readItems(req, res, uuid) {

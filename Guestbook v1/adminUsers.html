@@ -154,7 +154,13 @@ async function deleteUser(iduser){
     }
 }  
 async function listUsers() {
-    const response = await fetch('./users');
+    let accesstoken = localStorage.getItem('accesstoken');
+
+    const response = await fetch('./users', {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json',    "accesstoken":accesstoken
+},
+    });
     const objeto = await response.json();
     const listado = document.getElementById('listado');
     var ind = 0;

@@ -1,17 +1,10 @@
 var fs = require('fs');
-var crypto = require('crypto')
+var crypto = require('crypto');
+var jwt = require ('../ajwt');
+
 function sha256(s) {
     return crypto.createHash('sha256').update(s).digest('base64');
 };
-function hmac(data ,scertkey) {
-    const header = JSON.stringify({"alg": "HS256","typ": "JWT"});
-    const encodedHeaders = Buffer.from(header).toString('base64');
-    const Playload = JSON.stringify(data);
-    const encodedPlayload = Buffer.from(Playload).toString('base64');
-    const signture = crypto.createHmac('sha256', scertkey).update(`${encodedHeaders}.${encodedPlayload}`).digest('base64')
-    const token = `${encodedHeaders}.${encodedPlayload}.${signture}`
-    return token;
-}
 
 
 module.exports ={
@@ -29,8 +22,14 @@ module.exports ={
         if (hashpassword === object.password) {
         let m={"username":object.username,"exp":1673633592,"sub": object.id,"loggedIn": true};
         let secpass = "kafsZxcKokz";
-        let xtoken = hmac(m,secpass);
-        console.log(xtoken);
+        let xtoken = jwt.sign(m,secpass);
+        //console.log(xtoken);
+        let payload = jwt.decode(xtoken);
+        //console.log(payload);
+
+        
+
+
 
 
 

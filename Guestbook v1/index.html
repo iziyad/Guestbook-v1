@@ -261,6 +261,8 @@ button:hover {
     document.getElementById('addmessage').value='';
 }  
 async function addNote(){
+    let accesstoken = localStorage.getItem('accesstoken');
+
     const name = document.getElementById('addname').value; if(name.trim()===""){ alert('must enter name'); return false;}
     const email= document.getElementById('addemail').value; if(email.trim()===""){ alert('must enter email'); return false;}  
     const message = document.getElementById('addmessage').value; if(message.trim()===""){ alert('must enter password'); return false;}
@@ -268,7 +270,7 @@ async function addNote(){
 
     const response = await fetch('./gbook', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json',"accesstoken":accesstoken},
         body: JSON.stringify(objUser)
     });
 
@@ -279,6 +281,7 @@ async function addNote(){
 };  
 async function listGbook() {  
 const response = await fetch('./gbook');
+
 const objeto = await response.json();
 const listbook = document.getElementById('listgbook');
 let html = '';
@@ -347,6 +350,8 @@ async function Loginfun(){
       if (jsondata.username === "bigboss") {
         document.getElementById('lg2').style.visibility = 'visible';
         document.getElementById('lg3').style.visibility = 'visible';
+        document.getElementById('rg1').style.visibility = 'hidden';
+
 
       }
       
@@ -377,6 +382,8 @@ if (check === 'true') {
   document.getElementById('lg4').style.visibility = 'visible';
   document.getElementById('login').innerHTML = "welcome " + localStorage.getItem('username')
   document.getElementById('un1').innerHTML =localStorage.getItem('username');
+  document.getElementById('rg1').style.visibility = 'hidden';
+
 
   } else {
   document.getElementById('lg1').style.visibility = 'hidden';
@@ -385,6 +392,8 @@ if (check === 'true') {
   document.getElementById('lg4').style.visibility = 'visible';
   document.getElementById('login').innerHTML = "welcome " + localStorage.getItem('username');
   document.getElementById('un1').innerHTML =localStorage.getItem('username');
+  document.getElementById('rg1').style.visibility = 'hidden';
+
 
   }
   
@@ -394,7 +403,10 @@ else
 {document.getElementById('lg1').style.visibility = 'visible';
   document.getElementById('lg2').style.visibility = 'hidden';
   document.getElementById('lg3').style.visibility = 'hidden';
-  document.getElementById('lg4').style.visibility = 'hidden';}
+  document.getElementById('lg4').style.visibility = 'hidden';
+  document.getElementById('rg1').style.visibility = 'visible';
+
+}
 }
 
 

@@ -1,5 +1,6 @@
 var fs = require('fs');
 var crypto = require('crypto');
+var jwt = require('../ajwt');
 function sha256(s) {
     return crypto.createHash('sha256').update(s).digest('base64');
 };
@@ -18,28 +19,41 @@ module.exports ={
   
     },
     readItems(req, res, uuid) {
+        let secpass = "kafsZxcKokz";
+
+        let a =jwt.verify(req.headers.accesstoken,secpass);
+        let token = jwt.sign(a,secpass);
+
+
+        if (a.verify === true) {
+            if (uuid) {
+                console.log(uuid);
+                
+                const readuserdb = fs.readFileSync('./data/userdb.json', {encoding:'utf8'});
+                            const db = JSON.parse(readuserdb);
+                            let object= [];
+                            for (let item of db) {
+                                if (uuid===item.id) {
+                                    object = item;
+                                }
+                              };
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.write(JSON.stringify(object));
+                            res.end();    
+            }
+            else { 
+                const readuserdb = fs.readFileSync('./data/userdb.json', {encoding:'utf8'});
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.write(readuserdb);
+                res.end();
+            }
+        } else {
+                res.writeHead(200, { "Content-Type": "text/html" });
+                res.write("Access Denied");
+                res.end();
+        }
+
         
-        if (uuid) {
-            console.log(uuid);
-            
-            const readuserdb = fs.readFileSync('./data/userdb.json', {encoding:'utf8'});
-                        const db = JSON.parse(readuserdb);
-                        let object= [];
-                        for (let item of db) {
-                            if (uuid===item.id) {
-                                object = item;
-                            }
-                          };
-                        res.writeHead(200, { "Content-Type": "application/json" });
-                        res.write(JSON.stringify(object));
-                        res.end();    
-        }
-        else { 
-            const readuserdb = fs.readFileSync('./data/userdb.json', {encoding:'utf8'});
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.write(readuserdb);
-            res.end();
-        }
     },
 
     updateItemById(req, res){
